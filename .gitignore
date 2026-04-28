@@ -219,3 +219,5 @@ __marimo__/
 /data/
 /trocr-checkpoint/
 /trocr-fine-tuned-ita/
+/debug_images/
+/data/
