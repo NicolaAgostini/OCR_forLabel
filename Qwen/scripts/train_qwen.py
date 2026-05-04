@@ -27,7 +27,7 @@ def run_qwen_train():
 
     model = FastVisionModel.get_peft_model(
         model,
-        r=8,  # Riduciamo il rango da 16 a 8 per risparmiare memoria LoRA
+        r=16,  #  rango
         target_modules=["q_proj", "k_proj", "v_proj", "o_proj"],
         lora_alpha=16,
         lora_dropout=0,
@@ -47,19 +47,24 @@ def run_qwen_train():
         tokenizer=tokenizer,
         train_dataset=dataset,
         dataset_text_field="text",
-        max_seq_length=512,  # 3. Ridotto drasticamente da 2048 a 512
+        max_seq_length=2048,
         args=TrainingArguments(
-            per_device_train_batch_size=1,
-            gradient_accumulation_steps=8,  # Aumentato per compensare il batch piccolo
+            per_device_train_batch_size=2,
+            gradient_accumulation_steps=4,
             warmup_steps=5,
-            max_steps=30,  # Facciamo un test breve
+            #max_steps=30,  # test breve
+            num_train_epochs=3,
             learning_rate=2e-4,
             bf16=True,
             logging_steps=1,
-            output_dir="outputs",
-            save_strategy="no",
-            # 4. Ottimizzazioni memoria extra
             optim="adamw_8bit",
+            weight_decay=0.01,
+            lr_scheduler_type="linear",
+            seed=3407,
+            output_dir="outputs",
+            save_strategy="steps",
+            save_steps=50,
+            save_total_limit=2,
             gradient_checkpointing=True,
         ),
     )
